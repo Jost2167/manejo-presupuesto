@@ -1,0 +1,26 @@
+# Build folders
+bin/
+obj/
+out/
+
+# Rider / IDE config
+.idea/
+*.suo
+*.user
+*.userosscache
+
+# Logs
+*.log
+
+# ASP.NET Core runtime
+wwwroot/lib/
+
+# User secrets
+secrets.json
+*.db
+*.sqlite
+
+# System files
+.DS_Store
+Thumbs.db
+
