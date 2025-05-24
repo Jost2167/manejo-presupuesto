@@ -8,6 +8,7 @@ public class TipoCuenta //: IValidatableObject
     public int Id { get; set; }
     
     [Required(ErrorMessage = "El {0} es requerido.")]
+    [PrimeraLetraMayuscula]
     public string Nombre { get; set; }
     public int Orden { get; set; }
     public int UsuarioId { get; set; }
