@@ -37,7 +37,18 @@ public class TiposCuentasRepository: ITiposCuentasRepository
 
         return result == 1;
     }
-    
-    
-    
+
+    public async Task<IEnumerable<TipoCuenta>> Obtener(int usuarioId)
+    {
+        using SqlConnection connection = new SqlConnection(_connnectionString);
+        connection.Open();
+        
+        IEnumerable<TipoCuenta> queryResult = await connection.QueryAsync<TipoCuenta>(
+            @"SELECT Id, Nombre, Orden
+                FROM TiposCuentas
+                WHERE UsuarioId=@UsuarioId;", 
+            new {usuarioId=usuarioId});
+        
+        return queryResult;
+    }
 }

@@ -1,19 +1,30 @@
-using Dapper;
+using System.Collections;
 using ManejoPresupuesto.Models;
 using ManejoPresupuesto.Repository;
+using ManejoPresupuesto.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
 
 namespace ManejoPresupuesto.Controllers;
 
 public class TiposCuentasController: Controller
 {
     private readonly ITiposCuentasRepository _tiposCuentasRepository;
-    public TiposCuentasController(ITiposCuentasRepository tiposCuentasRepository)
+    private readonly ITiposCuentasService _tiposCuentasService;
+    public TiposCuentasController(ITiposCuentasRepository tiposCuentasRepository, ITiposCuentasService tiposCuentasService)
     {
         _tiposCuentasRepository = tiposCuentasRepository;
+        _tiposCuentasService = tiposCuentasService;
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Index()
+    {
+        int usuarioId = _tiposCuentasService.ObtenerUsuarioId();
+        IEnumerable<TipoCuenta> lista = await _tiposCuentasRepository.Obtener(usuarioId);
+        return View(lista);
     }
     
+    [HttpGet]
     public IActionResult Crear()
     {
         return View();
@@ -27,7 +38,7 @@ public class TiposCuentasController: Controller
             return View(tipoCuenta);
         }
 
-        tipoCuenta.UsuarioId = 1;
+        tipoCuenta.UsuarioId = _tiposCuentasService.ObtenerUsuarioId();
         
         bool yaExiste = await _tiposCuentasRepository.YaExiste(tipoCuenta.Nombre, tipoCuenta.UsuarioId);
         
@@ -40,14 +51,15 @@ public class TiposCuentasController: Controller
         }
         
         await _tiposCuentasRepository.Crear(tipoCuenta);
-        
-        return View();
-    }
 
+        return RedirectToAction(nameof(Index));
+    }
+    
     [HttpGet]
+    // Esto es lo que ejecuta la peticion AJAX del frontend
     public async Task<IActionResult> VerificarSiExiste(string nombre, int usuarioId)
     {
-        usuarioId = 1;
+        usuarioId = _tiposCuentasService.ObtenerUsuarioId();
         bool siExiste = await _tiposCuentasRepository.YaExiste(nombre, usuarioId);
 
         if (siExiste)
@@ -57,7 +69,4 @@ public class TiposCuentasController: Controller
         
         return Json(true);  // Si no existe, se envía un true en Json indicando que no hubo ningún error
     } 
-    
-    
-    
 }
