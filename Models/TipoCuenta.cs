@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using ManejoPresupuesto.Validations;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ManejoPresupuesto.Models;
 
@@ -9,6 +10,10 @@ public class TipoCuenta //: IValidatableObject
     
     [Required(ErrorMessage = "El {0} es requerido.")]
     [PrimeraLetraMayuscula]
+    // Remote indica que controlador y método se va a encargar de recibir
+    // la peticion AJAX del frontend para verificar la validacion de algun campo,
+    // y ese método debe de devolver un Json como respuesta.
+    [Remote("VerificarSiExiste","TiposCuentas")] 
     public string Nombre { get; set; }
     public int Orden { get; set; }
     public int UsuarioId { get; set; }

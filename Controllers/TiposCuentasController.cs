@@ -43,5 +43,21 @@ public class TiposCuentasController: Controller
         
         return View();
     }
+
+    [HttpGet]
+    public async Task<IActionResult> VerificarSiExiste(string nombre, int usuarioId)
+    {
+        usuarioId = 1;
+        bool siExiste = await _tiposCuentasRepository.YaExiste(nombre, usuarioId);
+
+        if (siExiste)
+        {
+            return Json($"El nombre {nombre} ya existe.");  // Si existe, se envía Json indicando el mensaje de error    
+        }
+        
+        return Json(true);  // Si no existe, se envía un true en Json indicando que no hubo ningún error
+    } 
+    
+    
     
 }
