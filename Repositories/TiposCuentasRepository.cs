@@ -51,4 +51,31 @@ public class TiposCuentasRepository: ITiposCuentasRepository
         
         return queryResult;
     }
+
+    public async Task Actualizar(TipoCuenta tipoCuenta)
+    {
+        using SqlConnection connection = new SqlConnection(_connnectionString);
+        connection.Open();
+
+        await connection.ExecuteAsync(
+            @"UPDATE TiposCuentas
+                SET Nombre=@Nombre
+                WHERE id=@Id",
+                tipoCuenta);
+    }
+
+    public async Task<TipoCuenta> ObtenerPorId(int id, int usuarioId)
+    {
+        using SqlConnection connection = new SqlConnection(_connnectionString);
+        connection.Open();
+
+        TipoCuenta tipoCuenta = await connection.QueryFirstOrDefaultAsync<TipoCuenta>(
+            @"SELECT id, Nombre, Orden
+                FROM TiposCuentas
+                WHERE id=@Id AND UsuarioId=@UsuarioId;",
+            new { Id = id, UsuarioId = usuarioId });
+
+        return tipoCuenta;
+    }
+    
 }
