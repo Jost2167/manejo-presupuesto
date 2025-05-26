@@ -1,4 +1,3 @@
-using System.Collections;
 using ManejoPresupuesto.Models;
 using ManejoPresupuesto.Repository;
 using ManejoPresupuesto.Services;
@@ -84,7 +83,36 @@ public class TiposCuentasController: Controller
         await _tiposCuentasRepository.Actualizar(tipoCuenta);
         
         return RedirectToAction(nameof(Index));
-    } 
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Eliminar(int id) // Muestra la vista
+    {
+        int usuarioId = _tiposCuentasService.ObtenerUsuarioId();
+        TipoCuenta tipoCuenta = await _tiposCuentasRepository.ObtenerPorId(id, usuarioId);
+
+        if (tipoCuenta is null)
+        {
+            return RedirectToAction("NoEncontrado","Home");
+        }
+        
+        return View(tipoCuenta); 
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> EliminarTipoCuenta(int id)
+    {
+        int usuarioId = _tiposCuentasService.ObtenerUsuarioId();
+        TipoCuenta tipoCuenta = await _tiposCuentasRepository.ObtenerPorId(id,usuarioId);
+
+        if (tipoCuenta is null)
+        {
+            return RedirectToAction("NoEncontrado", "Home");
+        }
+        
+        await _tiposCuentasRepository.Eliminar(id);
+        return RedirectToAction(nameof(Index));
+    }
     
     [HttpGet]
     // Esto es lo que ejecuta la peticion AJAX del frontend

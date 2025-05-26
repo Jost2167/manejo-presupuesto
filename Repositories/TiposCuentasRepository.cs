@@ -77,5 +77,17 @@ public class TiposCuentasRepository: ITiposCuentasRepository
 
         return tipoCuenta;
     }
+
+    public async Task Eliminar(int id)
+    {
+        using SqlConnection connection = new SqlConnection(_connnectionString);
+        connection.Open();
+
+        await connection.ExecuteAsync(
+            @"DELETE TiposCuentas
+                WHERE Id=@Id",
+            new { Id = id });
+    }
+    
     
 }
