@@ -36,8 +36,16 @@
         </div>
         <button type="submit" class="btn btn-primary">Enviar</button>
         <a asp-action="Index" class="btn btn-danger">Cancelar</a>
-
     </form>
+    
+    
+    @* Validaciones de anotaciones del modelo para formularios *@ 
+    @section Scripts
+    {
+        <partial name="_ValidationScriptsPartial"/>
+    }
 </div>
 </body>
 </html>
+
+ 

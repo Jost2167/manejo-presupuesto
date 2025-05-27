@@ -5,8 +5,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
+
 builder.Services.AddTransient<ITiposCuentasRepository, TiposCuentasRepository>();
 builder.Services.AddTransient<ITiposCuentasService, TiposCuentasService>();
+
+builder.Services.AddTransient<ICuentasRepository, CuentasRepository>();
 
 var app = builder.Build();
 
