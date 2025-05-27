@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.1.66" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="8.0.16" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.0-preview1.25120.4" />
   </ItemGroup>
 
