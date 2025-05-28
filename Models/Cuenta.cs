@@ -15,4 +15,5 @@ public class Cuenta
     public string Descripcion { get; set; }
     [Display(Name = "Tipo cuenta")]
     public int TipoCuentaId { get; set; }
+    public string TipoCuenta { get; set; }
 }

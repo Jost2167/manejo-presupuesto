@@ -22,10 +22,27 @@ public class CuentasController : Controller
         _cuentasRepository = cuentasRepository; 
     }
 
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
-        return View();
+        int usuarioId = _tiposCuentasService.ObtenerUsuarioId();
+
+        // Obtiene todas las cuentas asociadas al usuario actual
+        IEnumerable<Cuenta> cuentasConTipoCuenta = await _cuentasRepository.Buscar(usuarioId);
+
+        var modelo = cuentasConTipoCuenta
+            // Agrupa las cuentas por el nombre del tipo de cuenta
+            // Cada grupo generado tendrá una propiedad 'Key' (el nombre del tipo de cuenta)
+            // y una colección de cuentas que pertenecen a ese tipo
+            .GroupBy(x => x.TipoCuenta)
+            .Select(grupo => new IndiceCuentasViewModel
+            {
+                TipoCuenta = grupo.Key,
+                Cuentas = grupo
+            }).ToList();
+
+        return View(modelo);
     }
+
 
     [HttpGet]
     public async Task<IActionResult> Crear()
@@ -58,6 +75,57 @@ public class CuentasController : Controller
         
         await _cuentasRepository.Crear(cuentaVM);
 
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Editar(int id)
+    {
+        int usuarioId = _tiposCuentasService.ObtenerUsuarioId();
+        Cuenta cuenta = await _cuentasRepository.ObtenerPorId(id, usuarioId);
+
+        if (cuenta is null)
+        {
+            return RedirectToAction("NoEncontrado", "Home");
+        }
+        
+        // Conversion de Cuenta a CuentaCreanViewModel
+        CuentaCreacionViewModel cuentaVM = new CuentaCreacionViewModel()
+        {
+            Id = cuenta.Id,
+            Nombre = cuenta.Nombre,
+            Balance = cuenta.Balance,
+            Descripcion = cuenta.Descripcion,
+            TipoCuentaId = cuenta.TipoCuentaId
+        };
+        
+        // Obtener SelectListItem de TiposCuentas
+        IEnumerable<SelectListItem> tiposCuentas = await ObtenerTiposCuentas(usuarioId);
+        cuentaVM.TiposCuentas = tiposCuentas;
+        
+        return View(cuentaVM);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Editar(CuentaCreacionViewModel cuentaVM)
+    {
+        int usuarioId = _tiposCuentasService.ObtenerUsuarioId();
+        Cuenta cuenta = await _cuentasRepository.ObtenerPorId(cuentaVM.Id, usuarioId);
+
+        if (cuenta is null)
+        {
+            return RedirectToAction("NoEncontrado", "Home");
+        }
+
+        TipoCuenta tipoCuenta = await _tiposCuentasRepository.ObtenerPorId(cuentaVM.TipoCuentaId, usuarioId);
+
+        if (tipoCuenta is null)
+        {
+            return RedirectToAction("NoEncontrado", "Home");
+        }
+
+        await _cuentasRepository.Actualizar(cuentaVM);
+        
         return RedirectToAction(nameof(Index));
     }
     
