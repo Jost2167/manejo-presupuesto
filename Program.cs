@@ -11,6 +11,8 @@ builder.Services.AddTransient<ITiposCuentasService, TiposCuentasService>();
 
 builder.Services.AddTransient<ICuentasRepository, CuentasRepository>();
 
+builder.Services.AddTransient<ICategoriasRepository, CategoriaRepository>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

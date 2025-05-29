@@ -143,6 +143,7 @@ public class CuentasController : Controller
         return View(cuenta);
     }
 
+    [HttpPost]
     public async Task<IActionResult> EliminarCuenta(int id)
     {
         int usuarioId = _tiposCuentasService.ObtenerUsuarioId();
