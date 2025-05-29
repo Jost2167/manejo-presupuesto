@@ -54,6 +54,18 @@ public class CuentasRepository : ICuentasRepository
                 WHERE Id=@Id",
             cuentaVM);
     }
+
+    public async Task Eliminar(int id)
+    {
+        using SqlConnection connection = new SqlConnection(_connectionString);
+        connection.Open();
+
+        await connection.ExecuteAsync(
+            @"DELETE Cuentas 
+                WHERE Id=@Id",
+                new {Id=id});
+    }
+    
     
     public async Task<Cuenta> ObtenerPorId(int id, int usuarioId)
     {

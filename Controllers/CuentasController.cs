@@ -128,6 +128,35 @@ public class CuentasController : Controller
         
         return RedirectToAction(nameof(Index));
     }
+
+    [HttpGet]
+    public async Task<IActionResult> Eliminar(int id)
+    {
+        int usuarioId = _tiposCuentasService.ObtenerUsuarioId();
+        Cuenta cuenta = await _cuentasRepository.ObtenerPorId(id, usuarioId);
+
+        if (cuenta is null)
+        {
+            return RedirectToAction("NoEncontrado", "Home");
+        }
+
+        return View(cuenta);
+    }
+
+    public async Task<IActionResult> EliminarCuenta(int id)
+    {
+        int usuarioId = _tiposCuentasService.ObtenerUsuarioId();
+        Cuenta cuenta = await _cuentasRepository.ObtenerPorId(id, usuarioId);
+
+        if (cuenta is null)
+        {
+            return RedirectToAction("NoEncontrado", "Home");
+        }
+
+        await _cuentasRepository.Eliminar(id);
+
+        return RedirectToAction(nameof(Index));
+    }
     
     // Metodo para obtener los SelectListItem de TipoCuenta
     public async Task<IEnumerable<SelectListItem>> ObtenerTiposCuentas(int usuarioId)
