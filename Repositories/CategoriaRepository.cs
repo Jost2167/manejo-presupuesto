@@ -39,5 +39,31 @@ public class CategoriaRepository : ICategoriasRepository
 
         return categorias;
     }
+
+    public async Task<Categoria> ObtenerPorId(int id, int usuarioId)
+    {
+        using SqlConnection connection = new SqlConnection(_connectionString);
+        connection.Open();
+
+        Categoria categoria = await connection.QuerySingleAsync<Categoria>(
+            @"SELECT Id ,Nombre, TipoOperacionId
+                FROM Categorias
+                WHERE UsuarioId = @UsuarioId AND Id = @Id;",
+            new {UsuarioId = usuarioId, Id = id});
+        
+        return categoria;
+    }
+
+    public async Task Actualizar(Categoria categoria)
+    {
+        using SqlConnection connection = new SqlConnection(_connectionString);
+        connection.Open();
+
+        await connection.ExecuteAsync(
+            @"UPDATE Categorias
+                SET Nombre=@Nombre, TipoOperacionId=@TipoOperacionId
+                WHERE Id=@Id;",
+                categoria);
+    }
     
 }

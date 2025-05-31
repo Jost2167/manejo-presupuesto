@@ -6,4 +6,6 @@ public interface ICategoriasRepository
 {
     Task Crear(Categoria categoria);
     Task<IEnumerable<Categoria>> Obtener(int usuarioId);
+    Task<Categoria> ObtenerPorId(int id, int usuarioId);
+    Task Actualizar(Categoria categoria);
 }
