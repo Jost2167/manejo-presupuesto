@@ -25,4 +25,19 @@ public class CategoriaRepository : ICategoriasRepository
         
         categoria.Id = id;
     }
+
+    public async Task<IEnumerable<Categoria>> Obtener(int usuarioId)
+    {
+        using SqlConnection connection = new SqlConnection(_connectionString);
+        connection.Open();
+
+        IEnumerable<Categoria> categorias = await connection.QueryAsync<Categoria>(
+            @"SELECT Id, Nombre, TipoOperacionId
+                FROM Categorias
+                WHERE UsuarioId=@UsuarioId;",
+            new {UsuarioId = usuarioId});
+
+        return categorias;
+    }
+    
 }

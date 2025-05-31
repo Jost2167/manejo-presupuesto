@@ -17,9 +17,11 @@ public class CategoriasController: Controller
     }
 
     [HttpGet]
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
-        return View();
+        int usuarioId = _usuarioService.ObtenerUsuarioId();
+        IEnumerable<Categoria> categorias = await _categoriasRepository.Obtener(usuarioId); 
+        return View(categorias);
     }
 
     [HttpGet]
