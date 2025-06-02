@@ -65,5 +65,15 @@ public class CategoriaRepository : ICategoriasRepository
                 WHERE Id=@Id;",
                 categoria);
     }
-    
+
+    public async Task Eliminar(int id)
+    {
+        using SqlConnection connection = new SqlConnection(_connectionString);
+        connection.Open();
+
+        await connection.ExecuteAsync(
+        @"DELETE Categorias 
+            WHERE Id=@Id;",
+            new {Id = id});
+    }
 }

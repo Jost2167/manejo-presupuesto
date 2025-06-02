@@ -79,6 +79,36 @@ public class CategoriasController: Controller
         await _categoriasRepository.Actualizar(categoria);
         return RedirectToAction(nameof(Index));
     }
+
+    [HttpGet]
+    public async Task<IActionResult> Eliminar(int id)
+    {
+        int usuarioId = _usuarioService.ObtenerUsuarioId();
+        Categoria categoria = await _categoriasRepository.ObtenerPorId(id, usuarioId);
+
+        if (categoria is null)
+        {
+            return RedirectToAction("NoEncontrado","Home");
+        }
+        
+        return View(categoria);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> EliminarCategoria(int id)
+    {
+        int usuarioId = _usuarioService.ObtenerUsuarioId();
+        Categoria categoria = await _categoriasRepository.ObtenerPorId(id,usuarioId );
+
+        if (categoria is null)
+        {
+            return RedirectToAction("NoEncontrado", "Home");
+        }
+        
+        await _categoriasRepository.Eliminar(id);
+        
+        return RedirectToAction(nameof(Index));
+    }
         
     
     
