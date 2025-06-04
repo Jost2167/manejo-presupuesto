@@ -76,4 +76,18 @@ public class CategoriaRepository : ICategoriasRepository
             WHERE Id=@Id;",
             new {Id = id});
     }
+
+    public async Task<IEnumerable<Categoria>> Obtener(int usuarioId, TipoOperacion tipoOperacion)
+    {
+        using SqlConnection connection = new SqlConnection(_connectionString);
+        connection.Open();
+
+        IEnumerable<Categoria> categorias = await connection.QueryAsync<Categoria>(
+            @"SELECT *
+                FROM Categorias
+                WHERE UsuarioId=@UsuarioId AND TipoOperacionId=@TipoOperacionId",
+            new {UsuarioId = usuarioId, TipoOperacionId = tipoOperacion});
+        
+        return categorias;
+    }
 }
