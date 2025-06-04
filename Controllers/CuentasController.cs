@@ -76,7 +76,7 @@ public class CuentasController : Controller
         await _cuentasRepository.Crear(cuentaVM);
 
         return RedirectToAction(nameof(Index));
-    }
+    }       
 
     [HttpGet]
     public async Task<IActionResult> Editar(int id)

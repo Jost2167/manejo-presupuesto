@@ -44,7 +44,7 @@ public class TiposCuentasRepository: ITiposCuentasRepository
         connection.Open();
         
         IEnumerable<TipoCuenta> queryResult = await connection.QueryAsync<TipoCuenta>(
-            @"SELECT Id, Nombre, Orden
+            @"SELECT Id, Nombre
                 FROM TiposCuentas
                 WHERE UsuarioId=@UsuarioId;", 
             new {usuarioId=usuarioId});
