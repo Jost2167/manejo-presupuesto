@@ -164,6 +164,31 @@ public class TransaccionesController: Controller
 
         return RedirectToAction(nameof(Index));
     }
+
+    [HttpGet]
+    public async Task<IActionResult> Eliminar(int id)
+    {
+        int usuarioId = _usuarioService.ObtenerUsuarioId();
+        
+        Transaccion transaccion = await _transaccionRepository.ObtenerPorId(id,usuarioId);
+        if (transaccion is null) return RedirectToAction("NoEncontrado", "Home");
+        
+        return View(transaccion);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> EliminarTransaccion(int id)
+    {
+        int usuarioId = _usuarioService.ObtenerUsuarioId();
+        
+        // Obtener Tranasaccion
+        Transaccion transaccion = await _transaccionRepository.ObtenerPorId(id,usuarioId);
+        if (transaccion is null) return RedirectToAction("NoEncontrado", "Home");
+        
+        await _transaccionRepository.Eliminar(id);
+        
+        return RedirectToAction(nameof(Index));
+    }
     
     // Dropdown dependiente
     [HttpPost]

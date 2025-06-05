@@ -1,0 +1,21 @@
+@model Transaccion
+
+@{
+    ViewData["Title"] = "Eliminar Transacción";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>title</title>
+</head>
+<body>
+<h1>¿Está seguro que deseas elimiar la Transaccion por un monto de  @Model.Monto?</h1>
+<form asp-action="EliminarTransaccion">
+    <input type="hidden" asp-for="Id"/>
+    <button type="submit" class="btn btn-danger">Eliminar</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>
+</body>
+</html>

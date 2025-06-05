@@ -68,5 +68,14 @@ public class TransaccionRepository: ITransaccionRepository
 
         return transaccion;
     }
+
+    public async Task Eliminar(int id)
+    {
+        using SqlConnection connection = new SqlConnection(_connectionString);
+        await connection.ExecuteAsync(
+            @"Transacciones_Eliminar",
+            new {id},
+            commandType: CommandType.StoredProcedure);
+    }
     
 }
