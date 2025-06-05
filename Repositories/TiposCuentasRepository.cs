@@ -70,7 +70,7 @@ public class TiposCuentasRepository: ITiposCuentasRepository
         connection.Open();
 
         TipoCuenta tipoCuenta = await connection.QueryFirstOrDefaultAsync<TipoCuenta>(
-            @"SELECT id, Nombre, Orden
+            @"SELECT id, Nombre
                 FROM TiposCuentas
                 WHERE id=@Id AND UsuarioId=@UsuarioId;",
             new { Id = id, UsuarioId = usuarioId });

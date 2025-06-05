@@ -77,6 +77,95 @@ public class TransaccionesController: Controller
         return RedirectToAction(nameof(Index));
     }
 
+    [HttpGet]
+    public async Task<IActionResult> Editar(int id)
+    {
+        int usuarioId = _usuarioService.ObtenerUsuarioId();
+
+        Transaccion transaccion =  await _transaccionRepository.ObtenerPorId(id, usuarioId);
+
+        if (transaccion is null)
+        {
+            return RedirectToAction("NoEncontrado", "Home");
+        }
+        
+        // Mapeo manual de Transaccion a TransaccionActulizacionViewModel  
+        TransaccionActulizacionViewModel transaccionActulizacionVM = new TransaccionActulizacionViewModel()
+        {
+            Id = transaccion.Id,
+            Fecha = transaccion.Fecha,
+            Monto = transaccion.Monto,
+            Nota = transaccion.Nota,
+            CategoriaId = transaccion.CategoriaId,
+            CuentaId = transaccion.CuentaId,
+            UsuarioId = transaccion.UsuarioId,
+            TipoOperacionId = transaccion.TipoOperacionId,
+        };
+
+        // Como en la BD unicamente se esta guardando el monto en valor absoluto, cuando estemos realizando
+        // procesos relacionados con el monto, se debe diferenciar si es un egreso para indicar su signo (-) 
+        if (transaccionActulizacionVM.TipoOperacionId == TipoOperacion.Egreso)
+        {
+            transaccionActulizacionVM.MontoAnterior = transaccionActulizacionVM.Monto * (-1);
+        }
+        
+        transaccionActulizacionVM.MontoAnterior = transaccionActulizacionVM.Monto;
+        
+        transaccionActulizacionVM.CuentaAnteriorId = transaccion.CuentaId;
+        transaccionActulizacionVM.Cuentas = await ObtenerCuentas(transaccionActulizacionVM.UsuarioId);
+        transaccionActulizacionVM.Categorias = await ObtenerCategorias(transaccionActulizacionVM.UsuarioId, transaccionActulizacionVM.TipoOperacionId);
+
+        return View(transaccionActulizacionVM);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Editar(TransaccionActulizacionViewModel transaccionActulizacionVM)
+    {
+        int usuarioId = _usuarioService.ObtenerUsuarioId();
+
+        // Validar el modelo enviado
+        if (!ModelState.IsValid)
+        {
+            transaccionActulizacionVM.Cuentas = await ObtenerCuentas(usuarioId);
+            transaccionActulizacionVM.Categorias = await ObtenerCategorias(usuarioId, transaccionActulizacionVM.TipoOperacionId);
+            return View(transaccionActulizacionVM);
+        }
+        
+        // Validar si la transaccion pertenece al usuario
+        Transaccion transaccion = await _transaccionRepository.ObtenerPorId(transaccionActulizacionVM.Id, usuarioId);
+        if (transaccion is null)
+        {
+            return RedirectToAction("NoEncontrado", "Home");
+        }
+        
+        // Validar si la categoria pertenece al usuario
+        Categoria categoria = await _categoriasRepository.ObtenerPorId(transaccionActulizacionVM.CategoriaId, usuarioId);
+        if (categoria is null)
+        {
+            return RedirectToAction("NoEncontrado", "Home");
+        }
+        
+        // Validar si la cuenta enviada pertenece al usuario
+        Cuenta cuenta = await _cuentasRepository.ObtenerPorId(transaccionActulizacionVM.CuentaId, usuarioId);
+        if (cuenta is null)
+        {
+            return RedirectToAction("NoEncontrado", "Home"); 
+        }
+        
+        // Mapear de TransaccionActulizacionViewModel a Transaccion
+        MapearTransaccionDesdeTransaccionActualizacionVM(transaccion, transaccionActulizacionVM);    
+
+        if (transaccion.TipoOperacionId == TipoOperacion.Egreso)
+        {
+            transaccion.Monto = transaccion.Monto * (-1);
+        }
+        
+        await _transaccionRepository.Actualizar(transaccion,transaccionActulizacionVM.MontoAnterior, transaccionActulizacionVM.CuentaAnteriorId);
+
+        return RedirectToAction(nameof(Index));
+    }
+    
+    // Dropdown dependiente
     [HttpPost]
     public async Task<IActionResult> ObtenerCategorias([FromBody] TipoOperacion tipoOperacion)
     {
@@ -84,7 +173,7 @@ public class TransaccionesController: Controller
         IEnumerable<SelectListItem> categorias = await ObtenerCategorias(usuarioId, tipoOperacion);
         return Ok(categorias);
     }
-
+    
     public async Task<IEnumerable<SelectListItem>> ObtenerCategorias(int usuarioId, TipoOperacion tipoOperacion)
     {
         IEnumerable<Categoria> categorias = await _categoriasRepository.Obtener(usuarioId, tipoOperacion);
@@ -105,6 +194,16 @@ public class TransaccionesController: Controller
             Value = c.Id.ToString(),
             Text = c.Nombre
         });
+    }
+
+    private void MapearTransaccionDesdeTransaccionActualizacionVM(Transaccion transaccion, TransaccionActulizacionViewModel transaccionActulizacionVM)
+    {
+        transaccion.Fecha = transaccionActulizacionVM.Fecha;
+        transaccion.Monto = transaccionActulizacionVM.Monto;
+        transaccion.Nota = transaccionActulizacionVM.Nota;
+        transaccion.CategoriaId = transaccionActulizacionVM.CategoriaId;
+        transaccion.CuentaId = transaccionActulizacionVM.CuentaId;
+        transaccion.TipoOperacionId = transaccionActulizacionVM.TipoOperacionId;
     }
     
 }

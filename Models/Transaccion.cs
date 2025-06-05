@@ -17,4 +17,6 @@ public class Transaccion
     [Display(Name = "Cuenta")]
     public int CuentaId { get; set; }
     public int UsuarioId { get; set; }
+    [Display(Name = "Tipo Operación")]
+    public TipoOperacion TipoOperacionId { get; set; } = TipoOperacion.Ingreso;
 }

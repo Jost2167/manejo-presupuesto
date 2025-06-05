@@ -34,4 +34,39 @@ public class TransaccionRepository: ITransaccionRepository
         
         transaccion.Id = id;
     }
+
+    public async Task Actualizar(Transaccion transaccion, decimal montoAnterior, int cuentaAnteriorId)
+    {
+        using SqlConnection connection = new SqlConnection(_connectionString);
+        await connection.ExecuteAsync(
+            @"Transacciones_Actualizar",
+            new
+            {
+                transaccion.Id,
+                transaccion.Fecha,
+                transaccion.Monto,
+                montoAnterior,
+                transaccion.CuentaId,
+                cuentaAnteriorId,
+                transaccion.CategoriaId,
+                transaccion.Nota,
+            },
+            commandType: CommandType.StoredProcedure);
+    }
+
+    public async Task<Transaccion> ObtenerPorId(int id, int usuarioId)
+    {
+        using SqlConnection connection = new SqlConnection(_connectionString);
+
+        Transaccion transaccion = await connection.QueryFirstOrDefaultAsync<Transaccion>(
+            @"SELECT tra.*, cat.TipoOperacionId
+                FROM Transacciones as tra
+                INNER JOIN Categorias as cat 
+                ON cat.Id = tra.CategoriaId
+                WHERE tra.UsuarioId = @id AND tra.Id = @usuarioId;",
+            new { id, usuarioId});
+
+        return transaccion;
+    }
+    
 }

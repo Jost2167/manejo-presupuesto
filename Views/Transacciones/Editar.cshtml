@@ -1,7 +1,7 @@
-@model TransaccionCreacionViewModel
+@model TransaccionActulizacionViewModel
 
 @{
-    ViewData["Title"] = "Crear Transaccion";
+    ViewData["Title"] = "Editar Transacción";
 }
 
 <!DOCTYPE html>
@@ -11,9 +11,11 @@
     <title>title</title>
 </head>
 <body>
-<h1>Crear Transacción</h1>
-<form asp-action="Crear">
+<h1>Editar Transacción</h1>
+<form asp-action="Editar">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="MontoAnterior"/>
+    <input type="hidden" asp-for="CuentaAnteriorId"/>
     <div class="mb-3">
         <label asp-for="Fecha"></label>
         <input asp-for="Fecha" class="form-control"/>
@@ -67,6 +69,5 @@
         })
     </script>
 }
-
 </body>
 </html>
